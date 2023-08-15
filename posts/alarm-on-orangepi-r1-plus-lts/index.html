@@ -7,23 +7,7 @@
 <meta name="robots" content="index, follow">
 <title>Arch Linux on Orangepi R1 Plus LTS | Leachim&#39;s Blog</title>
 <meta name="keywords" content="">
-<meta name="description" content="前情提要 最近突然想起来手头有一个之前白嫖的Orangepi R1 Plus LTS（后称R1&#43;LTS）已经吃灰好久。本来打算弄软路由，但是这个板子本身并不内置Wi-Fi蓝牙模块导致如果想变成路由器我得再买一个USB网卡，否则就只能当旁路由。这么看性价比其实并不是很高，想了想软路由不是刚需就没折腾了。
-既然不用来装Openwrt，总觉得应该装点什么东西。然而目前这个开发板被官方或者非官方支持发行版却只有寥寥无几（Ubuntu，Debian，Openwrt，Android和Armbian）。不过也正常，这个板子除了当软路由之外毫无性价比可言，能有这么多发行版我觉得已经超出我的想象了。不过思来想去还是想装个Arch Linux玩玩。
-Arch Linux Arm (后称Alarm)官方并没有支持特别多的开发板（反而隔壁Manjaro Arm支持的更好），但好像大部分芯片至少都能找到一个对应的开发板被支持。R1&#43;LTS的芯片是Rockchip 3328，Alarm对这个芯片仅支持了Rock64开发板。看了一下官方安装说明，使用的是Generic镜像配合上Rock64的U-Boot的安装方式。这看起来很有戏，技术思路就是重新编译一下R1&#43;LTS的U-Boot固件，然后仿照官方说明安装即可。同时还惊喜的发现在两周前官方新增了对R1&#43;LTS的支持。
-安装过程 这里快速的过一下正确安装过程，踩的雷放在下一章讲。
-不想手动编译的可以直接移动到安装Arch Linux，本文提供以编译好的文件。
-配置 U-Boot 以下内容可配合U-Boot官方文档阅读。
-找到一个可以编译U-Boot的环境，我这里选用的是一个装有Arch Linux的amd64设备。
-从官网获取U-Boot。
-安装交叉编译依赖，文档中并没给Arch系的依赖，所以我只装了gcc-aarch64-linux-开头的几个必要的编译工具，剩下的等make的时候报错再递归的安装。
-找到需要的开发板的配置文件，对于R1&#43;LTS而言，配置文件在configs/orangepi-r1-plus-lts-rk3328_defconfig。运行配置：
-make orangepi-r1-plus-lts-rk3328_defconfig 此处先不进行U-Boot的编译，编译了会报错：
-Image &#39;simple-bin&#39; is missing external blobs and is non-functional: atf-bl31 /binman/simple-bin/fit/images/@atf-SEQ/atf-bl31 (bl31.elf): See the documentation for your board. You may need to build ARM Trusted Firmware and build with BL31=/path/to/bl31.bin 表示需要ARM Trusted Firmware，所以还需要去编译一个ATF。
-编译 ARM Trusted Firmware 以下内容可配合ATF官方文档阅读。
-使用与上节一样的编译环境。
-获取ATF仓库，这里我直接去GitHub镜像下载了。
-在路径docs/plat/rockchip.rst中找到了型号和教程。我这里运行的编译命令如下：
-make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3328/release/bl31/bl31.">
+<meta name="description" content="这篇博客讲述了作者在Orangepi R1 Plus LTS上安装Arch Linux的过程。尽管该板卡原本计划用于软路由，但由于缺少Wi-Fi蓝牙模块，作者放弃了软路由方案，转而尝试安装Arch Linux。作者详细描述了U-Boot配置、ARM Trusted Firmware编译以及U-Boot和设备树的编译和安装过程。最终，作者成功在Orangepi R1 Plus LTS上安装并启动了Arch Linux系统。作者还提到了官方推荐的Debian脚本编译U-Boot的方法，但由于使用Arch Linux，未进一步测试。">
 <meta name="author" content="">
 <link rel="canonical" href="https://leachim.wang/posts/alarm-on-orangepi-r1-plus-lts/">
 <link crossorigin="anonymous" href="/assets/css/stylesheet.5cfc680b1eeaeef9efbced92d46c2a9e876b72ee14fba85846afc4cff9e6e6f8.css" integrity="sha256-XPxoCx7q7vnvvO2S1Gwqnodrcu4U&#43;6hYRq/Ez/nm5vg=" rel="preload stylesheet" as="style">
@@ -73,23 +57,7 @@ make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3
 
     </style>
 </noscript><meta property="og:title" content="Arch Linux on Orangepi R1 Plus LTS" />
-<meta property="og:description" content="前情提要 最近突然想起来手头有一个之前白嫖的Orangepi R1 Plus LTS（后称R1&#43;LTS）已经吃灰好久。本来打算弄软路由，但是这个板子本身并不内置Wi-Fi蓝牙模块导致如果想变成路由器我得再买一个USB网卡，否则就只能当旁路由。这么看性价比其实并不是很高，想了想软路由不是刚需就没折腾了。
-既然不用来装Openwrt，总觉得应该装点什么东西。然而目前这个开发板被官方或者非官方支持发行版却只有寥寥无几（Ubuntu，Debian，Openwrt，Android和Armbian）。不过也正常，这个板子除了当软路由之外毫无性价比可言，能有这么多发行版我觉得已经超出我的想象了。不过思来想去还是想装个Arch Linux玩玩。
-Arch Linux Arm (后称Alarm)官方并没有支持特别多的开发板（反而隔壁Manjaro Arm支持的更好），但好像大部分芯片至少都能找到一个对应的开发板被支持。R1&#43;LTS的芯片是Rockchip 3328，Alarm对这个芯片仅支持了Rock64开发板。看了一下官方安装说明，使用的是Generic镜像配合上Rock64的U-Boot的安装方式。这看起来很有戏，技术思路就是重新编译一下R1&#43;LTS的U-Boot固件，然后仿照官方说明安装即可。同时还惊喜的发现在两周前官方新增了对R1&#43;LTS的支持。
-安装过程 这里快速的过一下正确安装过程，踩的雷放在下一章讲。
-不想手动编译的可以直接移动到安装Arch Linux，本文提供以编译好的文件。
-配置 U-Boot 以下内容可配合U-Boot官方文档阅读。
-找到一个可以编译U-Boot的环境，我这里选用的是一个装有Arch Linux的amd64设备。
-从官网获取U-Boot。
-安装交叉编译依赖，文档中并没给Arch系的依赖，所以我只装了gcc-aarch64-linux-开头的几个必要的编译工具，剩下的等make的时候报错再递归的安装。
-找到需要的开发板的配置文件，对于R1&#43;LTS而言，配置文件在configs/orangepi-r1-plus-lts-rk3328_defconfig。运行配置：
-make orangepi-r1-plus-lts-rk3328_defconfig 此处先不进行U-Boot的编译，编译了会报错：
-Image &#39;simple-bin&#39; is missing external blobs and is non-functional: atf-bl31 /binman/simple-bin/fit/images/@atf-SEQ/atf-bl31 (bl31.elf): See the documentation for your board. You may need to build ARM Trusted Firmware and build with BL31=/path/to/bl31.bin 表示需要ARM Trusted Firmware，所以还需要去编译一个ATF。
-编译 ARM Trusted Firmware 以下内容可配合ATF官方文档阅读。
-使用与上节一样的编译环境。
-获取ATF仓库，这里我直接去GitHub镜像下载了。
-在路径docs/plat/rockchip.rst中找到了型号和教程。我这里运行的编译命令如下：
-make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3328/release/bl31/bl31." />
+<meta property="og:description" content="这篇博客讲述了作者在Orangepi R1 Plus LTS上安装Arch Linux的过程。尽管该板卡原本计划用于软路由，但由于缺少Wi-Fi蓝牙模块，作者放弃了软路由方案，转而尝试安装Arch Linux。作者详细描述了U-Boot配置、ARM Trusted Firmware编译以及U-Boot和设备树的编译和安装过程。最终，作者成功在Orangepi R1 Plus LTS上安装并启动了Arch Linux系统。作者还提到了官方推荐的Debian脚本编译U-Boot的方法，但由于使用Arch Linux，未进一步测试。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://leachim.wang/posts/alarm-on-orangepi-r1-plus-lts/" /><meta property="article:section" content="posts" />
 <meta property="article:published_time" content="2023-08-14T21:00:52+08:00" />
@@ -97,23 +65,7 @@ make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3
 
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Arch Linux on Orangepi R1 Plus LTS"/>
-<meta name="twitter:description" content="前情提要 最近突然想起来手头有一个之前白嫖的Orangepi R1 Plus LTS（后称R1&#43;LTS）已经吃灰好久。本来打算弄软路由，但是这个板子本身并不内置Wi-Fi蓝牙模块导致如果想变成路由器我得再买一个USB网卡，否则就只能当旁路由。这么看性价比其实并不是很高，想了想软路由不是刚需就没折腾了。
-既然不用来装Openwrt，总觉得应该装点什么东西。然而目前这个开发板被官方或者非官方支持发行版却只有寥寥无几（Ubuntu，Debian，Openwrt，Android和Armbian）。不过也正常，这个板子除了当软路由之外毫无性价比可言，能有这么多发行版我觉得已经超出我的想象了。不过思来想去还是想装个Arch Linux玩玩。
-Arch Linux Arm (后称Alarm)官方并没有支持特别多的开发板（反而隔壁Manjaro Arm支持的更好），但好像大部分芯片至少都能找到一个对应的开发板被支持。R1&#43;LTS的芯片是Rockchip 3328，Alarm对这个芯片仅支持了Rock64开发板。看了一下官方安装说明，使用的是Generic镜像配合上Rock64的U-Boot的安装方式。这看起来很有戏，技术思路就是重新编译一下R1&#43;LTS的U-Boot固件，然后仿照官方说明安装即可。同时还惊喜的发现在两周前官方新增了对R1&#43;LTS的支持。
-安装过程 这里快速的过一下正确安装过程，踩的雷放在下一章讲。
-不想手动编译的可以直接移动到安装Arch Linux，本文提供以编译好的文件。
-配置 U-Boot 以下内容可配合U-Boot官方文档阅读。
-找到一个可以编译U-Boot的环境，我这里选用的是一个装有Arch Linux的amd64设备。
-从官网获取U-Boot。
-安装交叉编译依赖，文档中并没给Arch系的依赖，所以我只装了gcc-aarch64-linux-开头的几个必要的编译工具，剩下的等make的时候报错再递归的安装。
-找到需要的开发板的配置文件，对于R1&#43;LTS而言，配置文件在configs/orangepi-r1-plus-lts-rk3328_defconfig。运行配置：
-make orangepi-r1-plus-lts-rk3328_defconfig 此处先不进行U-Boot的编译，编译了会报错：
-Image &#39;simple-bin&#39; is missing external blobs and is non-functional: atf-bl31 /binman/simple-bin/fit/images/@atf-SEQ/atf-bl31 (bl31.elf): See the documentation for your board. You may need to build ARM Trusted Firmware and build with BL31=/path/to/bl31.bin 表示需要ARM Trusted Firmware，所以还需要去编译一个ATF。
-编译 ARM Trusted Firmware 以下内容可配合ATF官方文档阅读。
-使用与上节一样的编译环境。
-获取ATF仓库，这里我直接去GitHub镜像下载了。
-在路径docs/plat/rockchip.rst中找到了型号和教程。我这里运行的编译命令如下：
-make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3328/release/bl31/bl31."/>
+<meta name="twitter:description" content="这篇博客讲述了作者在Orangepi R1 Plus LTS上安装Arch Linux的过程。尽管该板卡原本计划用于软路由，但由于缺少Wi-Fi蓝牙模块，作者放弃了软路由方案，转而尝试安装Arch Linux。作者详细描述了U-Boot配置、ARM Trusted Firmware编译以及U-Boot和设备树的编译和安装过程。最终，作者成功在Orangepi R1 Plus LTS上安装并启动了Arch Linux系统。作者还提到了官方推荐的Debian脚本编译U-Boot的方法，但由于使用Arch Linux，未进一步测试。"/>
 
 
 <script type="application/ld+json">
@@ -142,12 +94,12 @@ make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3
   "@type": "BlogPosting",
   "headline": "Arch Linux on Orangepi R1 Plus LTS",
   "name": "Arch Linux on Orangepi R1 Plus LTS",
-  "description": "前情提要 最近突然想起来手头有一个之前白嫖的Orangepi R1 Plus LTS（后称R1+LTS）已经吃灰好久。本来打算弄软路由，但是这个板子本身并不内置Wi-Fi蓝牙模块导致如果想变成路由器我得再买一个USB网卡，否则就只能当旁路由。这么看性价比其实并不是很高，想了想软路由不是刚需就没折腾了。\n既然不用来装Openwrt，总觉得应该装点什么东西。然而目前这个开发板被官方或者非官方支持发行版却只有寥寥无几（Ubuntu，Debian，Openwrt，Android和Armbian）。不过也正常，这个板子除了当软路由之外毫无性价比可言，能有这么多发行版我觉得已经超出我的想象了。不过思来想去还是想装个Arch Linux玩玩。\nArch Linux Arm (后称Alarm)官方并没有支持特别多的开发板（反而隔壁Manjaro Arm支持的更好），但好像大部分芯片至少都能找到一个对应的开发板被支持。R1+LTS的芯片是Rockchip 3328，Alarm对这个芯片仅支持了Rock64开发板。看了一下官方安装说明，使用的是Generic镜像配合上Rock64的U-Boot的安装方式。这看起来很有戏，技术思路就是重新编译一下R1+LTS的U-Boot固件，然后仿照官方说明安装即可。同时还惊喜的发现在两周前官方新增了对R1+LTS的支持。\n安装过程 这里快速的过一下正确安装过程，踩的雷放在下一章讲。\n不想手动编译的可以直接移动到安装Arch Linux，本文提供以编译好的文件。\n配置 U-Boot 以下内容可配合U-Boot官方文档阅读。\n找到一个可以编译U-Boot的环境，我这里选用的是一个装有Arch Linux的amd64设备。\n从官网获取U-Boot。\n安装交叉编译依赖，文档中并没给Arch系的依赖，所以我只装了gcc-aarch64-linux-开头的几个必要的编译工具，剩下的等make的时候报错再递归的安装。\n找到需要的开发板的配置文件，对于R1+LTS而言，配置文件在configs/orangepi-r1-plus-lts-rk3328_defconfig。运行配置：\nmake orangepi-r1-plus-lts-rk3328_defconfig 此处先不进行U-Boot的编译，编译了会报错：\nImage \u0026#39;simple-bin\u0026#39; is missing external blobs and is non-functional: atf-bl31 /binman/simple-bin/fit/images/@atf-SEQ/atf-bl31 (bl31.elf): See the documentation for your board. You may need to build ARM Trusted Firmware and build with BL31=/path/to/bl31.bin 表示需要ARM Trusted Firmware，所以还需要去编译一个ATF。\n编译 ARM Trusted Firmware 以下内容可配合ATF官方文档阅读。\n使用与上节一样的编译环境。\n获取ATF仓库，这里我直接去GitHub镜像下载了。\n在路径docs/plat/rockchip.rst中找到了型号和教程。我这里运行的编译命令如下：\nmake CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3328/release/bl31/bl31.",
+  "description": "这篇博客讲述了作者在Orangepi R1 Plus LTS上安装Arch Linux的过程。尽管该板卡原本计划用于软路由，但由于缺少Wi-Fi蓝牙模块，作者放弃了软路由方案，转而尝试安装Arch Linux。作者详细描述了U-Boot配置、ARM Trusted Firmware编译以及U-Boot和设备树的编译和安装过程。最终，作者成功在Orangepi R1 Plus LTS上安装并启动了Arch Linux系统。作者还提到了官方推荐的Debian脚本编译U-Boot的方法，但由于使用Arch Linux，未进一步测试。",
   "keywords": [
     
   ],
-  "articleBody": "前情提要 最近突然想起来手头有一个之前白嫖的Orangepi R1 Plus LTS（后称R1+LTS）已经吃灰好久。本来打算弄软路由，但是这个板子本身并不内置Wi-Fi蓝牙模块导致如果想变成路由器我得再买一个USB网卡，否则就只能当旁路由。这么看性价比其实并不是很高，想了想软路由不是刚需就没折腾了。\n既然不用来装Openwrt，总觉得应该装点什么东西。然而目前这个开发板被官方或者非官方支持发行版却只有寥寥无几（Ubuntu，Debian，Openwrt，Android和Armbian）。不过也正常，这个板子除了当软路由之外毫无性价比可言，能有这么多发行版我觉得已经超出我的想象了。不过思来想去还是想装个Arch Linux玩玩。\nArch Linux Arm (后称Alarm)官方并没有支持特别多的开发板（反而隔壁Manjaro Arm支持的更好），但好像大部分芯片至少都能找到一个对应的开发板被支持。R1+LTS的芯片是Rockchip 3328，Alarm对这个芯片仅支持了Rock64开发板。看了一下官方安装说明，使用的是Generic镜像配合上Rock64的U-Boot的安装方式。这看起来很有戏，技术思路就是重新编译一下R1+LTS的U-Boot固件，然后仿照官方说明安装即可。同时还惊喜的发现在两周前官方新增了对R1+LTS的支持。\n安装过程 这里快速的过一下正确安装过程，踩的雷放在下一章讲。\n不想手动编译的可以直接移动到安装Arch Linux，本文提供以编译好的文件。\n配置 U-Boot 以下内容可配合U-Boot官方文档阅读。\n找到一个可以编译U-Boot的环境，我这里选用的是一个装有Arch Linux的amd64设备。\n从官网获取U-Boot。\n安装交叉编译依赖，文档中并没给Arch系的依赖，所以我只装了gcc-aarch64-linux-开头的几个必要的编译工具，剩下的等make的时候报错再递归的安装。\n找到需要的开发板的配置文件，对于R1+LTS而言，配置文件在configs/orangepi-r1-plus-lts-rk3328_defconfig。运行配置：\nmake orangepi-r1-plus-lts-rk3328_defconfig 此处先不进行U-Boot的编译，编译了会报错：\nImage 'simple-bin' is missing external blobs and is non-functional: atf-bl31 /binman/simple-bin/fit/images/@atf-SEQ/atf-bl31 (bl31.elf): See the documentation for your board. You may need to build ARM Trusted Firmware and build with BL31=/path/to/bl31.bin 表示需要ARM Trusted Firmware，所以还需要去编译一个ATF。\n编译 ARM Trusted Firmware 以下内容可配合ATF官方文档阅读。\n使用与上节一样的编译环境。\n获取ATF仓库，这里我直接去GitHub镜像下载了。\n在路径docs/plat/rockchip.rst中找到了型号和教程。我这里运行的编译命令如下：\nmake CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3328/release/bl31/bl31.elf下可以找到所需要的文件。复制到U-Boot的目录下： cp build/rk3328/release/bl31/bl31.elf ../u-boot/ 编译 U-Boot 回到u-boot目录。\n按照错误提示进行编译 CROSS_COMPILE=aarch64-linux-gnu- BL31=bl31.elf make 编译后当前目录下有两个文件是我们需要的：idbloader.img和u-boot.itb。同时我们还需要找到一个文件，后面会用arch/arm/dts/rk3328-orangepi-r1-plus-lts.dtb，这是R1+LTS的设备树。 安装Arch Linux 刚刚我们获取了三个文件idbloader.img、u-boot.itb和rk3328-orangepi-r1-plus-lts.dtb。下文还将生成一个boot.scr，点击链接可以直接下载编译好的文件。\n请同步参照Alarm官方文档。 这里只讲差异点。\n这里需要一个U-Boot的boot.scr脚本，对于Rock64有现成的，这里我们需要自制一个。 touch boot.cmd # 创建boot.cmd文件 vim boot.cmd # 写入boot.cmd文件，具体内容在下方 mkimage -A arm64 -O linux -T script -C none -a 0 -e 0 -d boot.cmd boot.scr # 创建U-Boot引导脚本的二进制文件 cp boot.scr root/boot/ # 放入boot文件夹内 下面是boot.cmd的内容\npart uuid ${devtype} ${devnum}:${bootpart} uuid setenv bootargs console=${console} root=PARTUUID=${uuid} rw rootwait setenv fdtfile rockchip/rk3328-orangepi-r1-plus-lts.dtb if load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} /boot/Image; then if load ${devtype} ${devnum}:${bootpart} ${fdt_addr_r} /boot/dtbs/${fdtfile}; then fdt addr ${fdt_addr_r} fdt resize if load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} /boot/initramfs-linux.img; then booti ${kernel_addr_r} ${ramdisk_addr_r}:${filesize} ${fdt_addr_r}; else booti ${kernel_addr_r} - ${fdt_addr_r}; fi; fi; fi 在umount之前，我们需要将之前的存的设备树放于root/boot/dtbs/rk3328-orangepi-r1-plus-lts.dtb，因为Arch所提供的镜像中并没有R1+LTS的设备树。然后再Unmount： umount root 这里使用我们之前编译好的两个文件idbloader.img和u-boot.itb。假设都已经放入u-boot目录下。 dd if=idbloader.img of=/dev/sdX seek=64 conv=notrunc dd if=u-boot.itb of=/dev/sdX seek=16384 conv=notrunc [P.S.]最后不需要进行Install the U-Boot package操作，因为官方源并没有提供R1+LTS的U-Boot包，贸然删了boot.scr可能就启动不了了。\nArch 启动！ -` leachim@alarm .o+` ------------- `ooo/ OS: Arch Linux ARM aarch64 `+oooo: Host: Xunlong Orange Pi R1 Plus LTS `+oooooo: Kernel: 6.2.1-1-aarch64-ARCH -+oooooo+: Uptime: 2 hours, 14 mins `/:-:++oooo+: Packages: 156 (pacman) `/++++/+++++++: Shell: bash 5.1.16 `/++++++++++++++: Terminal: /dev/pts/0 `/+++ooooooooooooo/` CPU: (4) @ 1.296GHz ./ooosssso++osssssso+` Memory: 75MiB / 967MiB .oossssso-````/ossssss+` -osssssso. :ssssssso. :osssssss/ osssso+++. /ossssssss/ +ssssooo/- `/ossssso+/:- -:/+osssso+- `+sso+:-` `.-/+oso: `++:. `-/+/ .` `/ 写在最后 其实Orangepi是提供了R1+LTS的U-Boot适配代码的。在Branch v2020.10-rockchip64里提供了R1+LTS的配置。但不知道为啥我编译不出来：\ndrivers/ram/rockchip/sdram_rk3328.c: In function 'rk3328_dmc_init': drivers/ram/rockchip/sdram_rk3328.c:526:55: error: 'struct dtd_rockchip_rk3328_dmc' has no member named 'rockchip_sdram_params' 526 | (void *)dtplat-\u003erockchip_sdram_params; | ^~ make[4]: *** [scripts/Makefile.build:265: tpl/drivers/ram/rockchip/sdram_rk3328.o] Error 1 make[3]: *** [scripts/Makefile.build:419: tpl/drivers/ram/rockchip] Error 2 make[2]: *** [scripts/Makefile.build:419: tpl/drivers/ram] Error 2 官方其实推荐的是在Debian系下使用官方脚本来编译U-Boot，奈何手头上是Arch Linux就没有进行进一步测试了。\n",
-  "wordCount" : "299",
+  "articleBody": " 摘要 这篇博客讲述了作者在Orangepi R1 Plus LTS上安装Arch Linux的过程。尽管该板卡原本计划用于软路由，但由于缺少Wi-Fi蓝牙模块，作者放弃了软路由方案，转而尝试安装Arch Linux。作者详细描述了U-Boot配置、ARM Trusted Firmware编译以及U-Boot和设备树的编译和安装过程。最终，作者成功在Orangepi R1 Plus LTS上安装并启动了Arch Linux系统。作者还提到了官方推荐的Debian脚本编译U-Boot的方法，但由于使用Arch Linux，未进一步测试。 前情提要 最近突然想起来手头有一个之前白嫖的Orangepi R1 Plus LTS（后称R1+LTS）已经吃灰好久。本来打算弄软路由，但是这个板子本身并不内置Wi-Fi蓝牙模块导致如果想变成路由器我得再买一个USB网卡，否则就只能当旁路由。这么看性价比其实并不是很高，想了想软路由不是刚需就没折腾了。\n既然不用来装Openwrt，总觉得应该装点什么东西。然而目前这个开发板被官方或者非官方支持发行版却只有寥寥无几（Ubuntu，Debian，Openwrt，Android和Armbian）。不过也正常，这个板子除了当软路由之外毫无性价比可言，能有这么多发行版我觉得已经超出我的想象了。不过思来想去还是想装个Arch Linux玩玩。\nArch Linux Arm (后称Alarm)官方并没有支持特别多的开发板（反而隔壁Manjaro Arm支持的更好），但好像大部分芯片至少都能找到一个对应的开发板被支持。R1+LTS的芯片是Rockchip 3328，Alarm对这个芯片仅支持了Rock64开发板。看了一下官方安装说明，使用的是Generic镜像配合上Rock64的U-Boot的安装方式。这看起来很有戏，技术思路就是重新编译一下R1+LTS的U-Boot固件，然后仿照官方说明安装即可。同时还惊喜的发现在两周前官方新增了对R1+LTS的支持。\n安装过程 这里快速的过一下正确安装过程，踩的雷放在下一章讲。\n不想手动编译的可以直接移动到安装Arch Linux，本文提供以编译好的文件。\n配置 U-Boot 以下内容可配合U-Boot官方文档阅读。\n找到一个可以编译U-Boot的环境，我这里选用的是一个装有Arch Linux的amd64设备。 从官网获取U-Boot。 安装交叉编译依赖，文档中并没给Arch系的依赖，所以我只装了 gcc-aarch64-linux-开头的几个必要的编译工具，剩下的等 make的时候报错再递归的安装。 找到需要的开发板的配置文件，对于R1+LTS而言，配置文件在 configs/orangepi-r1-plus-lts-rk3328_defconfig。运行配置： make orangepi-r1-plus-lts-rk3328_defconfig 此处先不进行U-Boot的编译，编译了会报错：\nImage 'simple-bin' is missing external blobs and is non-functional: atf-bl31 /binman/simple-bin/fit/images/@atf-SEQ/atf-bl31 (bl31.elf): See the documentation for your board. You may need to build ARM Trusted Firmware and build with BL31=/path/to/bl31.bin 表示需要ARM Trusted Firmware，所以还需要去编译一个ATF。\n编译 ARM Trusted Firmware 以下内容可配合ATF官方文档阅读。\n使用与上节一样的编译环境。 获取ATF仓库，这里我直接去GitHub镜像下载了。 在路径 docs/plat/rockchip.rst中找到了型号和教程。我这里运行的编译命令如下： make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径 build/rk3328/release/bl31/bl31.elf下可以找到所需要的文件。复制到U-Boot的目录下： cp build/rk3328/release/bl31/bl31.elf ../u-boot/ 编译 U-Boot 回到 u-boot目录。\n按照错误提示进行编译 CROSS_COMPILE=aarch64-linux-gnu- BL31=bl31.elf make 编译后当前目录下有两个文件是我们需要的：idbloader.img和 u-boot.itb。同时我们还需要找到一个文件，后面会用 arch/arm/dts/rk3328-orangepi-r1-plus-lts.dtb，这是R1+LTS的设备树。 安装 Arch Linux 刚刚我们获取了三个文件idbloader.img、u-boot.itb和rk3328-orangepi-r1-plus-lts.dtb。下文还将生成一个boot.scr，点击链接可以直接下载编译好的文件。\n请同步参照Alarm官方文档。 这里只讲差异点。\n这里需要一个U-Boot的boot.scr脚本，对于Rock64有现成的，这里我们需要自制一个。 touch boot.cmd # 创建boot.cmd文件 vim boot.cmd # 写入boot.cmd文件，具体内容在下方 mkimage -A arm64 -O linux -T script -C none -a 0 -e 0 -d boot.cmd boot.scr # 创建U-Boot引导脚本的二进制文件 cp boot.scr root/boot/ # 放入boot文件夹内 下面是 boot.cmd的内容\npart uuid ${devtype} ${devnum}:${bootpart} uuid setenv bootargs console=${console} root=PARTUUID=${uuid} rw rootwait setenv fdtfile rockchip/rk3328-orangepi-r1-plus-lts.dtb if load ${devtype} ${devnum}:${bootpart} ${kernel_addr_r} /boot/Image; then if load ${devtype} ${devnum}:${bootpart} ${fdt_addr_r} /boot/dtbs/${fdtfile}; then fdt addr ${fdt_addr_r} fdt resize if load ${devtype} ${devnum}:${bootpart} ${ramdisk_addr_r} /boot/initramfs-linux.img; then booti ${kernel_addr_r} ${ramdisk_addr_r}:${filesize} ${fdt_addr_r}; else booti ${kernel_addr_r} - ${fdt_addr_r}; fi; fi; fi 在 umount之前，我们需要将之前的存的设备树放于 root/boot/dtbs/rk3328-orangepi-r1-plus-lts.dtb，因为Arch所提供的镜像中并没有R1+LTS的设备树。然后再Unmount： umount root 这里使用我们之前编译好的两个文件 idbloader.img和 u-boot.itb。假设都已经放入 u-boot目录下。 dd if=idbloader.img of=/dev/sdX seek=64 conv=notrunc dd if=u-boot.itb of=/dev/sdX seek=16384 conv=notrunc [P.S.]最后不需要进行 Install the U-Boot package操作，因为官方源并没有提供R1+LTS的U-Boot包，贸然删了 boot.scr可能就启动不了了。\nArch 启动！ -` leachim@alarm .o+` ------------- `ooo/ OS: Arch Linux ARM aarch64 `+oooo: Host: Xunlong Orange Pi R1 Plus LTS `+oooooo: Kernel: 6.2.1-1-aarch64-ARCH -+oooooo+: Uptime: 2 hours, 14 mins `/:-:++oooo+: Packages: 156 (pacman) `/++++/+++++++: Shell: bash 5.1.16 `/++++++++++++++: Terminal: /dev/pts/0 `/+++ooooooooooooo/` CPU: (4) @ 1.296GHz ./ooosssso++osssssso+` Memory: 75MiB / 967MiB .oossssso-````/ossssss+` -osssssso. :ssssssso. :osssssss/ osssso+++. /ossssssss/ +ssssooo/- `/ossssso+/:- -:/+osssso+- `+sso+:-` `.-/+oso: `++:. `-/+/ .` `/ 写在最后 其实Orangepi是提供了R1+LTS的U-Boot适配代码的。在Branch v2020.10-rockchip64里提供了R1+LTS的配置。但不知道为啥我编译不出来：\ndrivers/ram/rockchip/sdram_rk3328.c: In function 'rk3328_dmc_init': drivers/ram/rockchip/sdram_rk3328.c:526:55: error: 'struct dtd_rockchip_rk3328_dmc' has no member named 'rockchip_sdram_params' 526 | (void *)dtplat-\u003erockchip_sdram_params; | ^~ make[4]: *** [scripts/Makefile.build:265: tpl/drivers/ram/rockchip/sdram_rk3328.o] Error 1 make[3]: *** [scripts/Makefile.build:419: tpl/drivers/ram/rockchip] Error 2 make[2]: *** [scripts/Makefile.build:419: tpl/drivers/ram] Error 2 官方其实推荐的是在Debian系下使用官方脚本来编译U-Boot，奈何手头上是Arch Linux就没有进行进一步测试了。\n",
+  "wordCount" : "2357",
   "inLanguage": "en",
   "datePublished": "2023-08-14T21:00:52+08:00",
   "dateModified": "2023-08-14T21:00:52+08:00",
@@ -218,11 +170,11 @@ make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3
     <h1 class="post-title">
       Arch Linux on Orangepi R1 Plus LTS
     </h1>
-    <div class="post-meta"><span title='2023-08-14 21:00:52 +0800 CST'>August 14, 2023</span>&nbsp;·&nbsp;2 min
+    <div class="post-meta"><span title='2023-08-14 21:00:52 +0800 CST'>August 14, 2023</span>&nbsp;·&nbsp;5 min
 
 </div>
   </header> <div class="toc">
-    <details >
+    <details  open>
         <summary accesskey="c" title="(Alt + C)">
             <span class="details">Table of Contents</span>
         </summary>
@@ -240,7 +192,7 @@ make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3
                 <li>
                     <a href="#%e7%bc%96%e8%af%91-u-boot" aria-label="编译 U-Boot">编译 U-Boot</a></li>
                 <li>
-                    <a href="#%e5%ae%89%e8%a3%85arch-linux" aria-label="安装Arch Linux">安装Arch Linux</a></li>
+                    <a href="#%e5%ae%89%e8%a3%85-arch-linux" aria-label="安装 Arch Linux">安装 Arch Linux</a></li>
                 <li>
                     <a href="#arch-%e5%90%af%e5%8a%a8" aria-label="Arch 启动！">Arch 启动！</a></li></ul>
                 </li>
@@ -252,7 +204,14 @@ make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3
     </details>
 </div>
 
-  <div class="post-content"><h2 id="前情提要">前情提要<a hidden class="anchor" aria-hidden="true" href="#前情提要">#</a></h2>
+  <div class="post-content">
+
+<p><details >
+  <summary markdown="span">摘要</summary>
+  这篇博客讲述了作者在Orangepi R1 Plus LTS上安装Arch Linux的过程。尽管该板卡原本计划用于软路由，但由于缺少Wi-Fi蓝牙模块，作者放弃了软路由方案，转而尝试安装Arch Linux。作者详细描述了U-Boot配置、ARM Trusted Firmware编译以及U-Boot和设备树的编译和安装过程。最终，作者成功在Orangepi R1 Plus LTS上安装并启动了Arch Linux系统。作者还提到了官方推荐的Debian脚本编译U-Boot的方法，但由于使用Arch Linux，未进一步测试。
+</details></p>
+
+<h2 id="前情提要">前情提要<a hidden class="anchor" aria-hidden="true" href="#前情提要">#</a></h2>
 <p>最近突然想起来手头有一个之前白嫖的Orangepi R1 Plus LTS（后称R1+LTS）已经吃灰好久。本来打算弄软路由，但是这个板子本身并不内置Wi-Fi蓝牙模块导致如果想变成路由器我得再买一个USB网卡，否则就只能当旁路由。这么看性价比其实并不是很高，想了想软路由不是刚需就没折腾了。</p>
 <p>既然不用来装Openwrt，总觉得应该装点什么东西。然而目前这个开发板被官方或者非官方支持发行版却只有寥寥无几（Ubuntu，Debian，Openwrt，Android和Armbian）。不过也正常，这个板子除了当软路由之外毫无性价比可言，能有这么多发行版我觉得已经超出我的想象了。不过思来想去还是想装个Arch Linux玩玩。</p>
 <p><a href="https://archlinuxarm.org/platforms">Arch Linux Arm</a> (后称Alarm)官方并没有支持特别多的开发板（反而隔壁Manjaro Arm支持的更好），但好像大部分芯片至少都能找到一个对应的开发板被支持。R1+LTS的芯片是Rockchip 3328，Alarm对这个芯片仅支持了Rock64开发板。看了一下<a href="https://archlinuxarm.org/platforms/armv8/rockchip/rock64">官方安装说明</a>，使用的是Generic镜像配合上Rock64的U-Boot的安装方式。这看起来很有戏，技术思路就是重新编译一下R1+LTS的U-Boot固件，然后仿照官方说明安装即可。同时还惊喜的发现在两周前官方新增了对R1+LTS的<a href="https://source.denx.de/u-boot/u-boot/commit/9bd954ab8a8513913bf74be06ba80a79754c7820">支持</a>。</p>
@@ -262,18 +221,10 @@ make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3
 <h3 id="配置-u-boot">配置 U-Boot<a hidden class="anchor" aria-hidden="true" href="#配置-u-boot">#</a></h3>
 <p>以下内容可配合<a href="https://u-boot.readthedocs.io/en/latest/build/index.html">U-Boot官方文档</a>阅读。</p>
 <ol>
-<li>
-<p>找到一个可以编译U-Boot的环境，我这里选用的是一个装有Arch Linux的amd64设备。</p>
-</li>
-<li>
-<p>从官网获取<a href="https://source.denx.de/u-boot/u-boot">U-Boot</a>。</p>
-</li>
-<li>
-<p>安装交叉编译依赖，文档中并没给Arch系的依赖，所以我只装了<code>gcc-aarch64-linux-</code>开头的几个必要的编译工具，剩下的等<code>make</code>的时候报错再递归的安装。</p>
-</li>
-<li>
-<p>找到需要的开发板的配置文件，对于R1+LTS而言，配置文件在<code>configs/orangepi-r1-plus-lts-rk3328_defconfig</code>。运行配置：</p>
-</li>
+<li>找到一个可以编译U-Boot的环境，我这里选用的是一个装有Arch Linux的amd64设备。</li>
+<li>从官网获取<a href="https://source.denx.de/u-boot/u-boot">U-Boot</a>。</li>
+<li>安装交叉编译依赖，文档中并没给Arch系的依赖，所以我只装了 <code>gcc-aarch64-linux-</code>开头的几个必要的编译工具，剩下的等 <code>make</code>的时候报错再递归的安装。</li>
+<li>找到需要的开发板的配置文件，对于R1+LTS而言，配置文件在 <code>configs/orangepi-r1-plus-lts-rk3328_defconfig</code>。运行配置：</li>
 </ol>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>make orangepi-r1-plus-lts-rk3328_defconfig
 </span></span></code></pre></div><p>此处先不进行U-Boot的编译，编译了会报错：</p>
@@ -286,31 +237,25 @@ make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3
 <h3 id="编译-arm-trusted-firmware">编译 ARM Trusted Firmware<a hidden class="anchor" aria-hidden="true" href="#编译-arm-trusted-firmware">#</a></h3>
 <p>以下内容可配合<a href="https://trustedfirmware-a.readthedocs.io/en/latest/getting_started/initial-build.html">ATF官方文档</a>阅读。</p>
 <ol>
-<li>
-<p>使用与上节一样的编译环境。</p>
-</li>
-<li>
-<p>获取<a href="https://github.com/ARM-software/arm-trusted-firmware">ATF仓库</a>，这里我直接去GitHub镜像下载了。</p>
-</li>
-<li>
-<p>在路径<code>docs/plat/rockchip.rst</code>中找到了型号和教程。我这里运行的编译命令如下：</p>
-</li>
+<li>使用与上节一样的编译环境。</li>
+<li>获取<a href="https://github.com/ARM-software/arm-trusted-firmware">ATF仓库</a>，这里我直接去GitHub镜像下载了。</li>
+<li>在路径 <code>docs/plat/rockchip.rst</code>中找到了型号和教程。我这里运行的编译命令如下：</li>
 </ol>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>make CROSS_COMPILE<span style="color:#f92672">=</span>aarch64-linux-gnu- PLAT<span style="color:#f92672">=</span>rk3328
 </span></span></code></pre></div><ol start="4">
-<li>编译完之后路径<code>build/rk3328/release/bl31/bl31.elf</code>下可以找到所需要的文件。复制到U-Boot的目录下：</li>
+<li>编译完之后路径 <code>build/rk3328/release/bl31/bl31.elf</code>下可以找到所需要的文件。复制到U-Boot的目录下：</li>
 </ol>
 <pre tabindex="0"><code>cp build/rk3328/release/bl31/bl31.elf ../u-boot/
 </code></pre><h3 id="编译-u-boot">编译 U-Boot<a hidden class="anchor" aria-hidden="true" href="#编译-u-boot">#</a></h3>
-<p>回到<code>u-boot</code>目录。</p>
+<p>回到 <code>u-boot</code>目录。</p>
 <ol>
 <li>按照错误提示进行编译</li>
 </ol>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>CROSS_COMPILE<span style="color:#f92672">=</span>aarch64-linux-gnu- BL31<span style="color:#f92672">=</span>bl31.elf make
 </span></span></code></pre></div><ol start="2">
-<li>编译后当前目录下有两个文件是我们需要的：<code>idbloader.img</code>和<code>u-boot.itb</code>。同时我们还需要找到一个文件，后面会用<code>arch/arm/dts/rk3328-orangepi-r1-plus-lts.dtb</code>，这是R1+LTS的设备树。</li>
+<li>编译后当前目录下有两个文件是我们需要的：<code>idbloader.img</code>和 <code>u-boot.itb</code>。同时我们还需要找到一个文件，后面会用 <code>arch/arm/dts/rk3328-orangepi-r1-plus-lts.dtb</code>，这是R1+LTS的设备树。</li>
 </ol>
-<h3 id="安装arch-linux">安装Arch Linux<a hidden class="anchor" aria-hidden="true" href="#安装arch-linux">#</a></h3>
+<h3 id="安装-arch-linux">安装 Arch Linux<a hidden class="anchor" aria-hidden="true" href="#安装-arch-linux">#</a></h3>
 <p>刚刚我们获取了三个文件<a href="/alarm-on-orangepi-r1-plus-lts/idbloader.img"><code>idbloader.img</code></a>、<a href="/alarm-on-orangepi-r1-plus-lts/u-boot.itb"><code>u-boot.itb</code></a>和<a href="/alarm-on-orangepi-r1-plus-lts/rk3328-orangepi-r1-plus-lts.dtb"><code>rk3328-orangepi-r1-plus-lts.dtb</code></a>。下文还将生成一个<a href="/alarm-on-orangepi-r1-plus-lts/boot.scr"><code>boot.scr</code></a>，点击链接可以直接下载编译好的文件。</p>
 <p>请同步参照<a href="https://archlinuxarm.org/platforms/armv8/rockchip/rock64">Alarm官方文档</a>。
 这里只讲差异点。</p>
@@ -321,7 +266,7 @@ make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3
 </span></span><span style="display:flex;"><span>vim boot.cmd <span style="color:#75715e"># 写入boot.cmd文件，具体内容在下方</span>
 </span></span><span style="display:flex;"><span>mkimage -A arm64 -O linux -T script -C none -a <span style="color:#ae81ff">0</span> -e <span style="color:#ae81ff">0</span> -d boot.cmd boot.scr <span style="color:#75715e"># 创建U-Boot引导脚本的二进制文件</span>
 </span></span><span style="display:flex;"><span>cp boot.scr root/boot/ <span style="color:#75715e"># 放入boot文件夹内</span>
-</span></span></code></pre></div><p>下面是<code>boot.cmd</code>的内容</p>
+</span></span></code></pre></div><p>下面是 <code>boot.cmd</code>的内容</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>part uuid <span style="color:#e6db74">${</span>devtype<span style="color:#e6db74">}</span> <span style="color:#e6db74">${</span>devnum<span style="color:#e6db74">}</span>:<span style="color:#e6db74">${</span>bootpart<span style="color:#e6db74">}</span> uuid
 </span></span><span style="display:flex;"><span>setenv bootargs console<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>console<span style="color:#e6db74">}</span> root<span style="color:#f92672">=</span>PARTUUID<span style="color:#f92672">=</span><span style="color:#e6db74">${</span>uuid<span style="color:#e6db74">}</span> rw rootwait
 </span></span><span style="display:flex;"><span>setenv fdtfile rockchip/rk3328-orangepi-r1-plus-lts.dtb
@@ -338,15 +283,15 @@ make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3
 </span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">fi</span>;
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
 </span></span></code></pre></div><ol start="8">
-<li>在<code>umount</code>之前，我们需要将之前的存的设备树放于<code>root/boot/dtbs/rk3328-orangepi-r1-plus-lts.dtb</code>，因为Arch所提供的镜像中并没有R1+LTS的设备树。然后再Unmount：</li>
+<li>在 <code>umount</code>之前，我们需要将之前的存的设备树放于 <code>root/boot/dtbs/rk3328-orangepi-r1-plus-lts.dtb</code>，因为Arch所提供的镜像中并没有R1+LTS的设备树。然后再Unmount：</li>
 </ol>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>umount root
 </span></span></code></pre></div><ol start="9">
-<li>这里使用我们之前编译好的两个文件<code>idbloader.img</code>和<code>u-boot.itb</code>。假设都已经放入<code>u-boot</code>目录下。</li>
+<li>这里使用我们之前编译好的两个文件 <code>idbloader.img</code>和 <code>u-boot.itb</code>。假设都已经放入 <code>u-boot</code>目录下。</li>
 </ol>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>dd <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>idbloader.img of<span style="color:#f92672">=</span>/dev/sdX seek<span style="color:#f92672">=</span><span style="color:#ae81ff">64</span> conv<span style="color:#f92672">=</span>notrunc
 </span></span><span style="display:flex;"><span>dd <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>u-boot.itb of<span style="color:#f92672">=</span>/dev/sdX seek<span style="color:#f92672">=</span><span style="color:#ae81ff">16384</span> conv<span style="color:#f92672">=</span>notrunc
-</span></span></code></pre></div><p>[P.S.]最后不需要进行<code>Install the U-Boot package</code>操作，因为官方源并没有提供R1+LTS的U-Boot包，贸然删了<code>boot.scr</code>可能就启动不了了。</p>
+</span></span></code></pre></div><p>[P.S.]最后不需要进行 <code>Install the U-Boot package</code>操作，因为官方源并没有提供R1+LTS的U-Boot包，贸然删了 <code>boot.scr</code>可能就启动不了了。</p>
 <h3 id="arch-启动">Arch 启动！<a hidden class="anchor" aria-hidden="true" href="#arch-启动">#</a></h3>
 <pre tabindex="0"><code>                   -`                    leachim@alarm
                   .o+`                   -------------
@@ -396,7 +341,6 @@ make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3
         data-input-position="top"
         data-theme="preferred_color_scheme"
         data-lang="zh-CN"
-        data-loading="lazy"
         crossorigin="anonymous"
         async>
 </script>
