@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head>
+	<meta name="generator" content="Hugo 0.117.0"><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Leachim&#39;s Blog</title>
+
+<meta name="description" content="">
+<meta name="author" content="">
+<link rel="canonical" href="https://leachim.wang/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.5cfc680b1eeaeef9efbced92d46c2a9e876b72ee14fba85846afc4cff9e6e6f8.css" integrity="sha256-XPxoCx7q7vnvvO2S1Gwqnodrcu4U&#43;6hYRq/Ez/nm5vg=" rel="preload stylesheet" as="style">
+<link rel="icon" href="https://leachim.wang/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://leachim.wang/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://leachim.wang/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://leachim.wang/apple-touch-icon.png">
+<link rel="mask-icon" href="https://leachim.wang/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<link rel="alternate" type="application/rss+xml" href="https://leachim.wang/index.xml">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Leachim&#39;s Blog" />
+<meta property="og:description" content="" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://leachim.wang/" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Leachim&#39;s Blog"/>
+<meta name="twitter:description" content=""/>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Leachim's Blog",
+  "url": "https://leachim.wang",
+  "description": "",
+  "thumbnailUrl": "https://leachim.wang/favicon.ico",
+  "sameAs": [
+      
+  ]
+}
+</script>
+</head>
+
+<body class="list" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://leachim.wang" accesskey="h" title="Leachim&#39;s Blog (Alt + H)">Leachim&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main"> 
+
+<article class="first-entry"> 
+  <header class="entry-header">
+    <h2>Arch Linux on Orangepi R1 Plus LTS
+    </h2>
+  </header>
+  <div class="entry-content">
+    <p>前情提要 最近突然想起来手头有一个之前白嫖的Orangepi R1 Plus LTS（后称R1&#43;LTS）已经吃灰好久。本来打算弄软路由，但是这个板子本身并不内置Wi-Fi蓝牙模块导致如果想变成路由器我得再买一个USB网卡，否则就只能当旁路由。这么看性价比其实并不是很高，想了想软路由不是刚需就没折腾了。
+既然不用来装Openwrt，总觉得应该装点什么东西。然而目前这个开发板被官方或者非官方支持发行版却只有寥寥无几（Ubuntu，Debian，Openwrt，Android和Armbian）。不过也正常，这个板子除了当软路由之外毫无性价比可言，能有这么多发行版我觉得已经超出我的想象了。不过思来想去还是想装个Arch Linux玩玩。
+Arch Linux Arm (后称Alarm)官方并没有支持特别多的开发板（反而隔壁Manjaro Arm支持的更好），但好像大部分芯片至少都能找到一个对应的开发板被支持。R1&#43;LTS的芯片是Rockchip 3328，Alarm对这个芯片仅支持了Rock64开发板。看了一下官方安装说明，使用的是Generic镜像配合上Rock64的U-Boot的安装方式。这看起来很有戏，技术思路就是重新编译一下R1&#43;LTS的U-Boot固件，然后仿照官方说明安装即可。同时还惊喜的发现在两周前官方新增了对R1&#43;LTS的支持。
+安装过程 这里快速的过一下正确安装过程，踩的雷放在下一章讲。
+不想手动编译的可以直接移动到安装Arch Linux，本文提供以编译好的文件。
+配置 U-Boot 以下内容可配合U-Boot官方文档阅读。
+找到一个可以编译U-Boot的环境，我这里选用的是一个装有Arch Linux的amd64设备。
+从官网获取U-Boot。
+安装交叉编译依赖，文档中并没给Arch系的依赖，所以我只装了gcc-aarch64-linux-开头的几个必要的编译工具，剩下的等make的时候报错再递归的安装。
+找到需要的开发板的配置文件，对于R1&#43;LTS而言，配置文件在configs/orangepi-r1-plus-lts-rk3328_defconfig。运行配置：
+make orangepi-r1-plus-lts-rk3328_defconfig 此处先不进行U-Boot的编译，编译了会报错：
+Image &#39;simple-bin&#39; is missing external blobs and is non-functional: atf-bl31 /binman/simple-bin/fit/images/@atf-SEQ/atf-bl31 (bl31.elf): See the documentation for your board. You may need to build ARM Trusted Firmware and build with BL31=/path/to/bl31.bin 表示需要ARM Trusted Firmware，所以还需要去编译一个ATF。
+编译 ARM Trusted Firmware 以下内容可配合ATF官方文档阅读。
+使用与上节一样的编译环境。
+获取ATF仓库，这里我直接去GitHub镜像下载了。
+在路径docs/plat/rockchip.rst中找到了型号和教程。我这里运行的编译命令如下：
+make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3328/release/bl31/bl31....</p>
+  </div>
+  <footer class="entry-footer"><span title='2023-08-14 21:00:52 +0800 CST'>August 14, 2023</span>&nbsp;·&nbsp;2 min</footer>
+  <a class="entry-link" aria-label="post link to Arch Linux on Orangepi R1 Plus LTS" href="https://leachim.wang/posts/alarm-on-orangepi-r1-plus-lts/"></a>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>&copy; 2023 <a href="https://leachim.wang">Leachim&#39;s Blog</a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Posts on Leachim&#39;s Blog</title>
+    <link>https://leachim.wang/posts/</link>
+    <description>Recent content in Posts on Leachim&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 14 Aug 2023 21:00:52 +0800</lastBuildDate><atom:link href="https://leachim.wang/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Arch Linux on Orangepi R1 Plus LTS</title>
+      <link>https://leachim.wang/posts/alarm-on-orangepi-r1-plus-lts/</link>
+      <pubDate>Mon, 14 Aug 2023 21:00:52 +0800</pubDate>
+      
+      <guid>https://leachim.wang/posts/alarm-on-orangepi-r1-plus-lts/</guid>
+      <description>前情提要 最近突然想起来手头有一个之前白嫖的Orangepi R1 Plus LTS（后称R1+LTS）已经吃灰好久。本来打算弄软路由，但是这个板子本身并不内置Wi-Fi蓝牙模块导致如果想变成路由器我得再买一个USB网卡，否则就只能当旁路由。这么看性价比其实并不是很高，想了想软路由不是刚需就没折腾了。
+既然不用来装Openwrt，总觉得应该装点什么东西。然而目前这个开发板被官方或者非官方支持发行版却只有寥寥无几（Ubuntu，Debian，Openwrt，Android和Armbian）。不过也正常，这个板子除了当软路由之外毫无性价比可言，能有这么多发行版我觉得已经超出我的想象了。不过思来想去还是想装个Arch Linux玩玩。
+Arch Linux Arm (后称Alarm)官方并没有支持特别多的开发板（反而隔壁Manjaro Arm支持的更好），但好像大部分芯片至少都能找到一个对应的开发板被支持。R1+LTS的芯片是Rockchip 3328，Alarm对这个芯片仅支持了Rock64开发板。看了一下官方安装说明，使用的是Generic镜像配合上Rock64的U-Boot的安装方式。这看起来很有戏，技术思路就是重新编译一下R1+LTS的U-Boot固件，然后仿照官方说明安装即可。同时还惊喜的发现在两周前官方新增了对R1+LTS的支持。
+安装过程 这里快速的过一下正确安装过程，踩的雷放在下一章讲。
+不想手动编译的可以直接移动到安装Arch Linux，本文提供以编译好的文件。
+配置 U-Boot 以下内容可配合U-Boot官方文档阅读。
+找到一个可以编译U-Boot的环境，我这里选用的是一个装有Arch Linux的amd64设备。
+从官网获取U-Boot。
+安装交叉编译依赖，文档中并没给Arch系的依赖，所以我只装了gcc-aarch64-linux-开头的几个必要的编译工具，剩下的等make的时候报错再递归的安装。
+找到需要的开发板的配置文件，对于R1+LTS而言，配置文件在configs/orangepi-r1-plus-lts-rk3328_defconfig。运行配置：
+make orangepi-r1-plus-lts-rk3328_defconfig 此处先不进行U-Boot的编译，编译了会报错：
+Image &amp;#39;simple-bin&amp;#39; is missing external blobs and is non-functional: atf-bl31 /binman/simple-bin/fit/images/@atf-SEQ/atf-bl31 (bl31.elf): See the documentation for your board. You may need to build ARM Trusted Firmware and build with BL31=/path/to/bl31.bin 表示需要ARM Trusted Firmware，所以还需要去编译一个ATF。
+编译 ARM Trusted Firmware 以下内容可配合ATF官方文档阅读。
+使用与上节一样的编译环境。
+获取ATF仓库，这里我直接去GitHub镜像下载了。
+在路径docs/plat/rockchip.rst中找到了型号和教程。我这里运行的编译命令如下：
+make CROSS_COMPILE=aarch64-linux-gnu- PLAT=rk3328 编译完之后路径build/rk3328/release/bl31/bl31.</description>
+    </item>
+    
+  </channel>
+</rss>
