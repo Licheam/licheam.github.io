@@ -234,17 +234,17 @@
         elements.forEach(element => {
              const id = encodeURI(element.getAttribute('id')).toLowerCase();
              if (element === activeElement){
-                
-                const activeElementTop = document.querySelector(`.inner ul li a[href="#${id}"]`).offsetTop;
-                const tocContainerHeight = document.querySelector(`.inner`).clientHeight;
-                const scrollOffset = activeElementTop - (tocContainerHeight / 2);
-                document.querySelector(`.inner`).scrollTop = scrollOffset;
                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
              } else {
                  document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
              }
          })
+
          
+         const activeElementTop = document.querySelector(`.inner ul li a[href="#${id}"]`).offsetTop;
+         const tocContainerHeight = document.querySelector(`.inner`).clientHeight;
+         const scrollOffset = activeElementTop - (tocContainerHeight / 2);
+         document.querySelector(`.inner`).scrollTop = scrollOffset;
      }, false);
 
     const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
