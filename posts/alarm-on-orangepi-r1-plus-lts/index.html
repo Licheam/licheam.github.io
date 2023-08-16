@@ -283,7 +283,7 @@
 <p><a href="https://archlinuxarm.org/platforms">Arch Linux Arm</a> (后称Alarm)官方并没有支持特别多的开发板（反而隔壁Manjaro Arm支持的更好），但好像大部分芯片至少都能找到一个对应的开发板被支持。R1+LTS的芯片是Rockchip 3328，Alarm对这个芯片仅支持了Rock64开发板。看了一下<a href="https://archlinuxarm.org/platforms/armv8/rockchip/rock64">官方安装说明</a>，使用的是Generic镜像配合上Rock64的U-Boot的安装方式。这看起来很有戏，技术思路就是重新编译一下R1+LTS的U-Boot固件，然后仿照官方说明安装即可。同时还惊喜的发现在两周前官方新增了对R1+LTS的<a href="https://source.denx.de/u-boot/u-boot/commit/9bd954ab8a8513913bf74be06ba80a79754c7820">支持</a>。</p>
 <h2 id="安装过程">安装过程<a hidden class="anchor" aria-hidden="true" href="#安装过程">#</a></h2>
 <p>这里快速的过一下正确安装过程，踩的雷放在下一章讲。</p>
-<p>不想手动编译的可以直接移动到<a href="#%E5%AE%89%E8%A3%85arch-linux">安装Arch Linux</a>，本文提供以编译好的文件。</p>
+<p>不想手动编译的可以直接移动到<a href="#%E5%AE%89%E8%A3%85-arch-linux">安装Arch Linux</a>，本文提供以编译好的文件。</p>
 <h3 id="配置-u-boot">配置 U-Boot<a hidden class="anchor" aria-hidden="true" href="#配置-u-boot">#</a></h3>
 <p>以下内容可配合<a href="https://u-boot.readthedocs.io/en/latest/build/index.html">U-Boot官方文档</a>阅读。</p>
 <ol>
