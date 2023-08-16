@@ -235,7 +235,6 @@
              const id = encodeURI(element.getAttribute('id')).toLowerCase();
              if (element === activeElement){
                 
-                console.log(document.querySelector(`.inner ul li a[href="#${id}"]`))
                 const activeElementTop = document.querySelector(`.inner ul li a[href="#${id}"]`).offsetTop;
                 const tocContainerHeight = document.querySelector(`.inner`).clientHeight;
                 const scrollOffset = activeElementTop - (tocContainerHeight / 2);
