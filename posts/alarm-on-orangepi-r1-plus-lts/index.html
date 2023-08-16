@@ -10,7 +10,7 @@
 <meta name="description" content="这篇博客讲述了作者在Orangepi R1 Plus LTS上安装Arch Linux的过程。尽管该板卡原本计划用于软路由，但由于缺少Wi-Fi蓝牙模块，作者放弃了软路由方案，转而尝试安装Arch Linux。作者详细描述了U-Boot配置、ARM Trusted Firmware编译以及U-Boot和设备树的编译和安装过程。最终，作者成功在Orangepi R1 Plus LTS上安装并启动了Arch Linux系统。作者还提到了官方推荐的Debian脚本编译U-Boot的方法，但由于使用Arch Linux，未进一步测试。">
 <meta name="author" content="">
 <link rel="canonical" href="https://leachim.wang/posts/alarm-on-orangepi-r1-plus-lts/">
-<link crossorigin="anonymous" href="/assets/css/stylesheet.5cfc680b1eeaeef9efbced92d46c2a9e876b72ee14fba85846afc4cff9e6e6f8.css" integrity="sha256-XPxoCx7q7vnvvO2S1Gwqnodrcu4U&#43;6hYRq/Ez/nm5vg=" rel="preload stylesheet" as="style">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.ff1bdb0b8c8b1aa3f800688e2673f66ee63ccad98b5138abc32a04c9d4da791f.css" integrity="sha256-/xvbC4yLGqP4AGiOJnP2buY8ytmLUTirwyoEydTaeR8=" rel="preload stylesheet" as="style">
 <script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
     onload="hljs.initHighlightingOnLoad();"></script>
 <link rel="icon" href="https://leachim.wang/favicon.ico">
@@ -173,37 +173,97 @@
     <div class="post-meta"><span title='2023-08-14 21:00:52 +0800 CST'>August 14, 2023</span>&nbsp;·&nbsp;5 min
 
 </div>
-  </header> <div class="toc">
-    <details  open>
-        <summary accesskey="c" title="(Alt + C)">
-            <span class="details">Table of Contents</span>
-        </summary>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">Table of Contents</span>
+            </summary>
 
-        <div class="inner"><ul>
-                <li>
-                    <a href="#%e5%89%8d%e6%83%85%e6%8f%90%e8%a6%81" aria-label="前情提要">前情提要</a></li>
-                <li>
-                    <a href="#%e5%ae%89%e8%a3%85%e8%bf%87%e7%a8%8b" aria-label="安装过程">安装过程</a><ul>
-                        
-                <li>
-                    <a href="#%e9%85%8d%e7%bd%ae-u-boot" aria-label="配置 U-Boot">配置 U-Boot</a></li>
-                <li>
-                    <a href="#%e7%bc%96%e8%af%91-arm-trusted-firmware" aria-label="编译 ARM Trusted Firmware">编译 ARM Trusted Firmware</a></li>
-                <li>
-                    <a href="#%e7%bc%96%e8%af%91-u-boot" aria-label="编译 U-Boot">编译 U-Boot</a></li>
-                <li>
-                    <a href="#%e5%ae%89%e8%a3%85-arch-linux" aria-label="安装 Arch Linux">安装 Arch Linux</a></li>
-                <li>
-                    <a href="#arch-%e5%90%af%e5%8a%a8" aria-label="Arch 启动！">Arch 启动！</a></li></ul>
-                </li>
-                <li>
-                    <a href="#%e5%86%99%e5%9c%a8%e6%9c%80%e5%90%8e" aria-label="写在最后">写在最后</a>
-                </li>
-            </ul>
-        </div>
-    </details>
-</div>
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e5%89%8d%e6%83%85%e6%8f%90%e8%a6%81" aria-label="前情提要">前情提要</a></li>
+                    <li>
+                        <a href="#%e5%ae%89%e8%a3%85%e8%bf%87%e7%a8%8b" aria-label="安装过程">安装过程</a><ul>
+                            
+                    <li>
+                        <a href="#%e9%85%8d%e7%bd%ae-u-boot" aria-label="配置 U-Boot">配置 U-Boot</a></li>
+                    <li>
+                        <a href="#%e7%bc%96%e8%af%91-arm-trusted-firmware" aria-label="编译 ARM Trusted Firmware">编译 ARM Trusted Firmware</a></li>
+                    <li>
+                        <a href="#%e7%bc%96%e8%af%91-u-boot" aria-label="编译 U-Boot">编译 U-Boot</a></li>
+                    <li>
+                        <a href="#%e5%ae%89%e8%a3%85-arch-linux" aria-label="安装 Arch Linux">安装 Arch Linux</a></li>
+                    <li>
+                        <a href="#arch-%e5%90%af%e5%8a%a8" aria-label="Arch 启动！">Arch 启动！</a></li></ul>
+                    </li>
+                    <li>
+                        <a href="#%e5%86%99%e5%9c%a8%e6%9c%80%e5%90%8e" aria-label="写在最后">写在最后</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
 
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
   <div class="post-content">
 
 <p><details >
