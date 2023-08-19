@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en" dir="auto">
+
+<head><meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="robots" content="index, follow">
+<title>Arch Linux on Orangepi 5 Plus | Leachim&#39;s Blog</title>
+<meta name="keywords" content="">
+<meta name="description" content="前情提要 最近剁手了一个Rockchip 3588的开发板Orangepi 5 plus（后称Opi5&#43;），主要是有点馋Rk3588的性能。谁能拒绝">
+<meta name="author" content="">
+<link rel="canonical" href="https://leachim.wang/posts/alarm-on-orangepi-5-plus/">
+<link crossorigin="anonymous" href="/assets/css/stylesheet.ff1bdb0b8c8b1aa3f800688e2673f66ee63ccad98b5138abc32a04c9d4da791f.css" integrity="sha256-/xvbC4yLGqP4AGiOJnP2buY8ytmLUTirwyoEydTaeR8=" rel="preload stylesheet" as="style">
+<script defer crossorigin="anonymous" src="/assets/js/highlight.f413e19d0714851f6474e7ee9632408e58ac146fbdbe62747134bea2fa3415e0.js" integrity="sha256-9BPhnQcUhR9kdOfuljJAjlisFG&#43;9vmJ0cTS&#43;ovo0FeA="
+    onload="hljs.initHighlightingOnLoad();"></script>
+<link rel="icon" href="https://leachim.wang/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="https://leachim.wang/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://leachim.wang/favicon-32x32.png">
+<link rel="apple-touch-icon" href="https://leachim.wang/apple-touch-icon.png">
+<link rel="mask-icon" href="https://leachim.wang/safari-pinned-tab.svg">
+<meta name="theme-color" content="#2e2e33">
+<meta name="msapplication-TileColor" content="#2e2e33">
+<noscript>
+    <style>
+        #theme-toggle,
+        .top-link {
+            display: none;
+        }
+
+    </style>
+    <style>
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --theme: rgb(29, 30, 32);
+                --entry: rgb(46, 46, 51);
+                --primary: rgb(218, 218, 219);
+                --secondary: rgb(155, 156, 157);
+                --tertiary: rgb(65, 66, 68);
+                --content: rgb(196, 196, 197);
+                --hljs-bg: rgb(46, 46, 51);
+                --code-bg: rgb(55, 56, 62);
+                --border: rgb(51, 51, 51);
+            }
+
+            .list {
+                background: var(--theme);
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-track {
+                background: 0 0;
+            }
+
+            .list:not(.dark)::-webkit-scrollbar-thumb {
+                border-color: var(--theme);
+            }
+        }
+
+    </style>
+</noscript><meta property="og:title" content="Arch Linux on Orangepi 5 Plus" />
+<meta property="og:description" content="前情提要 最近剁手了一个Rockchip 3588的开发板Orangepi 5 plus（后称Opi5&#43;），主要是有点馋Rk3588的性能。谁能拒绝" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://leachim.wang/posts/alarm-on-orangepi-5-plus/" /><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2023-08-19T18:52:46+08:00" />
+<meta property="article:modified_time" content="2023-08-19T18:52:46+08:00" />
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Arch Linux on Orangepi 5 Plus"/>
+<meta name="twitter:description" content="前情提要 最近剁手了一个Rockchip 3588的开发板Orangepi 5 plus（后称Opi5&#43;），主要是有点馋Rk3588的性能。谁能拒绝"/>
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [, 
+    {
+      "@type": "ListItem",
+      "position":  2 ,
+      "name": "Posts",
+      "item": "https://leachim.wang/posts/"
+    }, 
+    {
+      "@type": "ListItem",
+      "position":  3 ,
+      "name": "Arch Linux on Orangepi 5 Plus",
+      "item": "https://leachim.wang/posts/alarm-on-orangepi-5-plus/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Arch Linux on Orangepi 5 Plus",
+  "name": "Arch Linux on Orangepi 5 Plus",
+  "description": "前情提要 最近剁手了一个Rockchip 3588的开发板Orangepi 5 plus（后称Opi5+），主要是有点馋Rk3588的性能。谁能拒绝",
+  "keywords": [
+    
+  ],
+  "articleBody": "前情提要 最近剁手了一个Rockchip 3588的开发板Orangepi 5 plus（后称Opi5+），主要是有点馋Rk3588的性能。谁能拒绝一个比骁龙845还强的开发板呢。现在开发板都卷到8nm工艺了。当然第一件事还是随便烧录一个官方的镜像看看板子有没有问题，然后就是折腾一下Arch Linux Arm（后称Alarm）。当然官方镜像肯定不会翻车，隔壁Armbian也刷了试试。目前唯一的问题就是Rk3588本身的Linux内核mainline支持还没到位，不像上次的Rk3328已经被Linux内核官方支持了。目前看来无论是Orangepi OS（Arch版），还是Armbian的Release对于Rk3588的内核支持都只能到5.10。不过这都不是事，毕竟内核替换一下还是有可能装上Alarm的。\n调研 有了上次的经验，这次强刷Alarm就打算先做个多方案调研。大概能列出来强刷Alarm有如下几种不同的方案。\n使用Alarm官方的Genetic镜像的rootfs和bootfs，然后把编译好（或者从其他发行版，如Armbian，中扣的）的U-Boot刷到主分区或boot分区前，然后放入对应的boot.scr，见Arch Linux on Orangepi R1 Plus LTS。\n前提 Alarm的U-Boot支持 Alarm的Kernel支持 优势 通过Alarm更新Kernel 通过Aur更新U-Boot（需要有人制作PKGBUILD或者自行制作） 这种方法只要有Aur版本的U-Boot就基本和普通的Alarm支持的开发板体验没啥差距了，能用这种当然是最好。\n使用Alarm官方的rootfs和bootfs，然后替换其Kernel文件和U-Boot文件。参考Aur package linux-rockchip-rk3588-bin。\n前提 Alarm的U-Boot支持 Alarm的Kernel支持 优势 通过Aur更新Kernel（需要有人制作PKGBUILD或者自行制作） 通过Aur更新U-Boot（需要有人制作PKGBUILD或者自行制作） 这种方法基本上是一套通用的方法，毕竟替换了Kernel和U-Boot之后基本上啥都能跑起来。然后因为启动方式和Alarm相同，所以只需要在Aur中维护一个对应版本即可实现更新。\n使用Alarm官方的rootfs，但替换bootfs和U-Boot成其他发行版的。参考Installing Arch Linux AArch64 on the NanoPi R2S。\n前提 Alarm的U-Boot支持 Alarm的Kernel支持 优势 简单快速 这种方法非常简单，基本只需要将其他发行版rootfs换成Alamr就行。当然劣势就很明显了，因为bootfs完全与Alarm不同，自然通过Aur更新就不合理了，所以更新Kernel和U-Boot就可能稍微麻烦一点。\n本文本来是想通过第二种方法安装Alarm的，但可惜遇到了一点问题，所以最后还是选择了第三种方法。下面直接讲第三种方法的安装过程，第二种遇到的问题在后续补充。\n安装过程 本次安装不包含编译U-Boot和Kernel的过程，毕竟总不能每次更新都编译一次，自然是用其他发行版的U-Boot和Kernel才能可持续发展。这里就选择了Armbian作为本次NTR对象。不得不说Armbian支持的板子还是很多的。\n从Armbian官方下载Orangepi 5的镜像，这里我的版本为Armbian_23.5.5_Orangepi5-plus_bookworm_legacy_5.10.160_minimal。注意目前Orangepi 5 plus的镜像放在了Orangepi 5的页面下的Additional Images的小字部分。而Orangepi 5的镜像是跑不起来的。\n将镜像烧录到SD卡上。\n注意这里我并没有用Installing Arch Linux AArch64 on the NanoPi R2S这篇文章说的方法：先自己分区然后只烧录分区表到bootfs之间的部分。具体细节下文可能会展开，这里先全部烧录上sd卡。将/dev/sdX替换成你的设备。\ndd bs=4M if=Armbian_23.5.5_Orangepi5-plus_bookworm_legacy_5.10.160_minimal.img of=/dev/sdX status=progress conv=fsync 此时会发现sd卡中有两个分区，一个是bootfs分区，一个是rootfs分区，格式为GPT。其中bootfs的分区Start Sector为32768。因为我烧录的是minimal镜像，所以rootfs分区初始化不会很大。\n在Opi5+上启动SD卡，至登陆界面弹出来即可。\nArmbian在第一次启动的时候会自动扩容rootfs分区到SD卡的完整大小（在登陆之前即可完成）。当然这里也可以手动操作，注意如果手动调整了rootfs大小之后需要修改bootfs中的armbianEnv.txt中rootdev的值为修改过后的rootfs分区的UUID（如果UUID发生了变化的话）。\n将SD卡插回来，然后挂载rootfs分区，获取rootfs中的fstab并移除其余文件。\nmount /dev/sdX2 root cp root/etc/fstab . # 获取fstab到当前工作目录 rm -rf root/* # 删除其余内容 烧录Alarm的rootfs，并移除root内部的boot。\n这里使用root用户操作，请勿使用sudo操作。否则会破坏文件权限。注意这里使用bsdtar也是因为它不会破坏文件权限，如果文件权限错误的话之后系统alarm用户的使用会出现问题。具体可以查阅Alarm社区相关讨论。\n因为打算用Armbian的全套启动流程，这里就不需要Alarm的boot启动方式。所以直接移除掉。\nwget http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C root rm -rf root/boot/* 把rootfs中的fstab替换成我们之前保存的fstab。\ncp fstab root/etc/fstab 注意这里默认之前并没有自行修改过分区，如果修改了分区需要保证UUID一致，如果UUID不一致的话需要手动修改fstab中的UUID。可以使用blkid命令查看分区的UUID。\nUnmount rootfs分区。\numount root 请注意这里并没有结束，我们之后还需要删除Alarm的内核，切勿冲动进系统然后pacman -Syu。\n将SD卡插回Opi5+，启动，初始化pacman。\npacman-key --init pacman-key --populate archlinuxarm 删除Alarm的内核。\npacman -R linux-aarch64 这里我们删除内核的时候大部分内容是不会删除的，因为Armbian的/boot和Alarm的/boot中启动模式不一样。这个操作只会会删除/boot/Image，具体需要按照版本分析。\n重新链接linux内核/boot/Image。\nln -s /boot/vmlinuz-5.10.160-rk35xx /boot/Image 如此便完成了Alarm的移花接木，剩下就是\nArch启动！\n-` leachim@alarm .o+` ------------- `ooo/ OS: Arch Linux ARM aarch64 `+oooo: Host: Orange Pi 5 Plus `+oooooo: Kernel: 5.10.160-rk35xx -+oooooo+: Uptime: 1 hour, 57 mins `/:-:++oooo+: Packages: 175 (pacman) `/++++/+++++++: Shell: zsh 5.9 `/++++++++++++++: Terminal: /dev/pts/1 `/+++ooooooooooooo/` CPU: (8) @ 1.800GHz ./ooosssso++osssssso+` Memory: 159MiB / 7688MiB .oossssso-````/ossssss+` -osssssso. :ssssssso. :osssssss/ osssso+++. /ossssssss/ +ssssooo/- `/ossssso+/:- -:/+osssso+- `+sso+:-` `.-/+oso: `++:. `-/+/ .` `/ 写在最后 关于内核 Armbian维护了一个Rk3588的内核，并被人制作到了Aur中Aur package linux-rockchip-rk3588-bin。但这个内核似乎并不支持Orangepi 5 plus，所以Armbian开发者在Orangepi 5 plus的Release版本中使用的是他们自己编译的一个5.10.160-rk35xx内核。这个内核并没有被Armbian打包成deb发布，所以目前来看并不值得使用第二种方法。也许等之后Orangepi 5 plus的内核支持更好之后再折腾，目前而言第三种还是最为方便的。\n关于bootfs Armbian的bootfs和Alarm的bootfs是不同的。Alarm的boot方式是基于mkinitcpio，内核文件不直接安装在/boot目录下。而Armbian的boot方式是直接安装在/boot目录下。所以如果想要完美移植内核的话，还需要研究mkinitcpio的工作原理。这个就以后再折腾吧。\n",
+  "wordCount" : "3023",
+  "inLanguage": "en",
+  "datePublished": "2023-08-19T18:52:46+08:00",
+  "dateModified": "2023-08-19T18:52:46+08:00",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://leachim.wang/posts/alarm-on-orangepi-5-plus/"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Leachim's Blog",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://leachim.wang/favicon.ico"
+    }
+  }
+}
+</script>
+</head>
+
+<body class="" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="https://leachim.wang" accesskey="h" title="Leachim&#39;s Blog (Alt + H)">Leachim&#39;s Blog</a>
+            <div class="logo-switches">
+                <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="18" viewBox="0 0 24 24"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <ul id="menu">
+        </ul>
+    </nav>
+</header>
+<main class="main">
+
+<article class="post-single">
+  <header class="post-header">
+    <div class="breadcrumbs"><a href="https://leachim.wang">Home</a>&nbsp;»&nbsp;<a href="https://leachim.wang/posts/">Posts</a></div>
+    <h1 class="post-title">
+      Arch Linux on Orangepi 5 Plus
+    </h1>
+    <div class="post-meta"><span title='2023-08-19 18:52:46 +0800 CST'>August 19, 2023</span>&nbsp;·&nbsp;7 min
+
+</div>
+  </header> <aside id="toc-container" class="toc-container wide">
+    <div class="toc">
+        <details  open>
+            <summary accesskey="c" title="(Alt + C)">
+                <span class="details">Table of Contents</span>
+            </summary>
+
+            <div class="inner"><ul>
+                    <li>
+                        <a href="#%e5%89%8d%e6%83%85%e6%8f%90%e8%a6%81" aria-label="前情提要">前情提要</a></li>
+                    <li>
+                        <a href="#%e8%b0%83%e7%a0%94" aria-label="调研">调研</a></li>
+                    <li>
+                        <a href="#%e5%ae%89%e8%a3%85%e8%bf%87%e7%a8%8b" aria-label="安装过程">安装过程</a></li>
+                    <li>
+                        <a href="#%e5%86%99%e5%9c%a8%e6%9c%80%e5%90%8e" aria-label="写在最后">写在最后</a><ul>
+                            
+                    <li>
+                        <a href="#%e5%85%b3%e4%ba%8e%e5%86%85%e6%a0%b8" aria-label="关于内核">关于内核</a></li>
+                    <li>
+                        <a href="#%e5%85%b3%e4%ba%8ebootfs" aria-label="关于bootfs">关于bootfs</a>
+                    </li>
+                </ul>
+                </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</aside>
+<script>
+    let activeElement;
+    let elements;
+    window.addEventListener('DOMContentLoaded', function (event) {
+        checkTocPosition();
+
+        elements = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]');
+         
+         activeElement = elements[0];
+         const id = encodeURI(activeElement.getAttribute('id')).toLowerCase();
+         document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+     }, false);
+
+    window.addEventListener('resize', function(event) {
+        checkTocPosition();
+    }, false);
+
+    window.addEventListener('scroll', () => {
+        
+        activeElement = Array.from(elements).find((element) => {
+            if ((getOffsetTop(element) - window.pageYOffset) > 0 && 
+                (getOffsetTop(element) - window.pageYOffset) < window.innerHeight/2) {
+                return element;
+            }
+        }) || activeElement
+
+        elements.forEach(element => {
+             const id = encodeURI(element.getAttribute('id')).toLowerCase();
+             if (element === activeElement){
+                document.querySelector(`.inner ul li a[href="#${id}"]`).classList.add('active');
+             } else {
+                 document.querySelector(`.inner ul li a[href="#${id}"]`).classList.remove('active');
+             }
+         })
+
+         
+         const activeElementTop = document.querySelector(`.inner ul li a[href="#${id}"]`).offsetTop;
+         const tocContainerHeight = document.querySelector(`.inner`).clientHeight;
+         const scrollOffset = activeElementTop - (tocContainerHeight / 2);
+         document.querySelector(`.inner`).scrollTop = scrollOffset;
+     }, false);
+
+    const main = parseInt(getComputedStyle(document.body).getPropertyValue('--article-width'), 10);
+    const toc = parseInt(getComputedStyle(document.body).getPropertyValue('--toc-width'), 10);
+    const gap = parseInt(getComputedStyle(document.body).getPropertyValue('--gap'), 10);
+
+    function checkTocPosition() {
+        const width = document.body.scrollWidth;
+
+        if (width - main - (toc * 2) - (gap * 4) > 0) {
+            document.getElementById("toc-container").classList.add("wide");
+        } else {
+            document.getElementById("toc-container").classList.remove("wide");
+        }
+    }
+
+    function getOffsetTop(element) {
+        if (!element.getClientRects().length) {
+            return 0;
+        }
+        let rect = element.getBoundingClientRect();
+        let win = element.ownerDocument.defaultView;
+        return rect.top + win.pageYOffset;   
+    }
+</script>
+  <div class="post-content"><h2 id="前情提要">前情提要<a hidden class="anchor" aria-hidden="true" href="#前情提要">#</a></h2>
+<p>最近剁手了一个Rockchip 3588的开发板Orangepi 5 plus（后称Opi5+），主要是有点馋Rk3588的性能。谁能拒绝一个比骁龙845还强的开发板呢。现在开发板都卷到8nm工艺了。当然第一件事还是随便烧录一个官方的镜像看看板子有没有问题，然后就是折腾一下Arch Linux Arm（后称Alarm）。当然官方镜像肯定不会翻车，隔壁Armbian也刷了试试。目前唯一的问题就是Rk3588本身的Linux内核mainline支持还没到位，不像上次的Rk3328已经被Linux内核官方支持了。目前看来无论是Orangepi OS（Arch版），还是Armbian的Release对于Rk3588的内核支持都只能到5.10。不过这都不是事，毕竟内核替换一下还是有可能装上Alarm的。</p>
+<h2 id="调研">调研<a hidden class="anchor" aria-hidden="true" href="#调研">#</a></h2>
+<p>有了上次的经验，这次强刷Alarm就打算先做个多方案调研。大概能列出来强刷Alarm有如下几种不同的方案。</p>
+<ol>
+<li>
+<p>使用Alarm官方的Genetic镜像的rootfs和bootfs，然后把编译好（或者从其他发行版，如Armbian，中扣的）的U-Boot刷到主分区或boot分区前，然后放入对应的boot.scr，见<a href="/posts/alarm-on-orangepi-r1-plus-lts">Arch Linux on Orangepi R1 Plus LTS</a>。</p>
+<ul>
+<li>前提
+<ul>
+<li><input disabled="" type="checkbox"> Alarm的U-Boot支持</li>
+<li><input checked="" disabled="" type="checkbox"> Alarm的Kernel支持</li>
+</ul>
+</li>
+<li>优势
+<ul>
+<li>通过Alarm更新Kernel</li>
+<li>通过Aur更新U-Boot（需要有人制作PKGBUILD或者自行制作）</li>
+</ul>
+</li>
+</ul>
+<p>这种方法只要有Aur版本的U-Boot就基本和普通的Alarm支持的开发板体验没啥差距了，能用这种当然是最好。</p>
+</li>
+<li>
+<p>使用Alarm官方的rootfs和bootfs，然后替换其Kernel文件和U-Boot文件。参考<a href="https://aur.archlinux.org/packages/linux-rockchip-rk3588-bin">Aur package linux-rockchip-rk3588-bin</a>。</p>
+<ul>
+<li>前提
+<ul>
+<li><input disabled="" type="checkbox"> Alarm的U-Boot支持</li>
+<li><input disabled="" type="checkbox"> Alarm的Kernel支持</li>
+</ul>
+</li>
+<li>优势
+<ul>
+<li>通过Aur更新Kernel（需要有人制作PKGBUILD或者自行制作）</li>
+<li>通过Aur更新U-Boot（需要有人制作PKGBUILD或者自行制作）</li>
+</ul>
+</li>
+</ul>
+<p>这种方法基本上是一套通用的方法，毕竟替换了Kernel和U-Boot之后基本上啥都能跑起来。然后因为启动方式和Alarm相同，所以只需要在Aur中维护一个对应版本即可实现更新。</p>
+</li>
+<li>
+<p>使用Alarm官方的rootfs，但替换bootfs和U-Boot成其他发行版的。参考<a href="https://gist.github.com/larsch/a8f13faa2163984bb945d02efb897e6d">Installing Arch Linux AArch64 on the NanoPi R2S</a>。</p>
+<ul>
+<li>前提
+<ul>
+<li><input disabled="" type="checkbox"> Alarm的U-Boot支持</li>
+<li><input disabled="" type="checkbox"> Alarm的Kernel支持</li>
+</ul>
+</li>
+<li>优势
+<ul>
+<li>简单快速</li>
+</ul>
+</li>
+</ul>
+<p>这种方法非常简单，基本只需要将其他发行版rootfs换成Alamr就行。当然劣势就很明显了，因为bootfs完全与Alarm不同，自然通过Aur更新就不合理了，所以更新Kernel和U-Boot就可能稍微麻烦一点。</p>
+</li>
+</ol>
+<p>本文本来是想通过第二种方法安装Alarm的，但可惜遇到了一点问题，所以最后还是选择了第三种方法。下面直接讲第三种方法的安装过程，第二种遇到的问题在后续补充。</p>
+<h2 id="安装过程">安装过程<a hidden class="anchor" aria-hidden="true" href="#安装过程">#</a></h2>
+<p>本次安装不包含编译U-Boot和Kernel的过程，毕竟总不能每次更新都编译一次，自然是用其他发行版的U-Boot和Kernel才能可持续发展。这里就选择了Armbian<del>作为本次NTR对象</del>。不得不说Armbian支持的板子还是很多的。</p>
+<ol>
+<li>
+<p>从Armbian官方下载<a href="https://www.armbian.com/orangepi-5/">Orangepi 5</a>的镜像，这里我的版本为<code>Armbian_23.5.5_Orangepi5-plus_bookworm_legacy_5.10.160_minimal</code>。注意目前Orangepi 5 plus的镜像放在了Orangepi 5的页面下的Additional Images的小字部分。而Orangepi 5的镜像是跑不起来的。</p>
+</li>
+<li>
+<p>将镜像烧录到SD卡上。</p>
+<p>注意这里我并没有用<a href="https://gist.github.com/larsch/a8f13faa2163984bb945d02efb897e6d">Installing Arch Linux AArch64 on the NanoPi R2S</a>这篇文章说的方法：先自己分区然后只烧录分区表到bootfs之间的部分。具体细节下文可能会展开，这里先全部烧录上sd卡。将<code>/dev/sdX</code>替换成你的设备。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>dd bs<span style="color:#f92672">=</span>4M <span style="color:#66d9ef">if</span><span style="color:#f92672">=</span>Armbian_23.5.5_Orangepi5-plus_bookworm_legacy_5.10.160_minimal.img of<span style="color:#f92672">=</span>/dev/sdX status<span style="color:#f92672">=</span>progress conv<span style="color:#f92672">=</span>fsync
+</span></span></code></pre></div><p>此时会发现sd卡中有两个分区，一个是bootfs分区，一个是rootfs分区，格式为GPT。其中bootfs的分区Start Sector为<code>32768</code>。因为我烧录的是minimal镜像，所以rootfs分区初始化不会很大。</p>
+</li>
+<li>
+<p>在Opi5+上启动SD卡，至登陆界面弹出来即可。</p>
+<p>Armbian在第一次启动的时候会自动扩容rootfs分区到SD卡的完整大小（在登陆之前即可完成）。当然这里也可以手动操作，注意如果手动调整了rootfs大小之后需要修改bootfs中的<code>armbianEnv.txt</code>中<code>rootdev</code>的值为修改过后的rootfs分区的UUID（如果UUID发生了变化的话）。</p>
+</li>
+<li>
+<p>将SD卡插回来，然后挂载rootfs分区，获取rootfs中的fstab并移除其余文件。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>mount /dev/sdX2 root
+</span></span><span style="display:flex;"><span>cp root/etc/fstab . <span style="color:#75715e"># 获取fstab到当前工作目录</span>
+</span></span><span style="display:flex;"><span>rm -rf root/* <span style="color:#75715e"># 删除其余内容</span>
+</span></span></code></pre></div></li>
+<li>
+<p>烧录Alarm的rootfs，并移除root内部的boot。</p>
+<p>这里使用root用户操作，请勿使用sudo操作。否则会破坏文件权限。注意这里使用bsdtar也是因为它不会破坏文件权限，如果文件权限错误的话之后系统alarm用户的使用会出现问题。具体可以查阅Alarm社区相关讨论。</p>
+<p>因为打算用Armbian的全套启动流程，这里就不需要Alarm的boot启动方式。所以直接移除掉。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>wget http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz
+</span></span><span style="display:flex;"><span>bsdtar -xpf ArchLinuxARM-aarch64-latest.tar.gz -C root
+</span></span><span style="display:flex;"><span>rm -rf root/boot/*
+</span></span></code></pre></div></li>
+<li>
+<p>把rootfs中的fstab替换成我们之前保存的fstab。</p>
+<pre tabindex="0"><code>cp fstab root/etc/fstab
+</code></pre><p>注意这里默认之前并没有自行修改过分区，如果修改了分区需要保证UUID一致，如果UUID不一致的话需要手动修改fstab中的UUID。可以使用<code>blkid</code>命令查看分区的UUID。</p>
+</li>
+<li>
+<p>Unmount rootfs分区。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>umount root
+</span></span></code></pre></div></li>
+</ol>
+<p><strong>请注意这里并没有结束</strong>，我们之后还需要删除Alarm的内核，切勿冲动进系统然后<code>pacman -Syu</code>。</p>
+<ol start="8">
+<li>
+<p>将SD卡插回Opi5+，启动，初始化pacman。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>pacman-key --init
+</span></span><span style="display:flex;"><span>pacman-key --populate archlinuxarm
+</span></span></code></pre></div></li>
+<li>
+<p>删除Alarm的内核。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>pacman -R linux-aarch64
+</span></span></code></pre></div><p>这里我们删除内核的时候大部分内容是不会删除的，因为Armbian的<code>/boot</code>和Alarm的<code>/boot</code>中启动模式不一样。这个操作只会会删除<code>/boot/Image</code>，具体需要按照版本分析。</p>
+</li>
+<li>
+<p>重新链接linux内核<code>/boot/Image</code>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>ln -s /boot/vmlinuz-5.10.160-rk35xx /boot/Image
+</span></span></code></pre></div></li>
+</ol>
+<p>如此便完成了Alarm的移花接木，剩下就是</p>
+<p><strong>Arch启动！</strong></p>
+<pre tabindex="0"><code>                   -`                    leachim@alarm
+                  .o+`                   -------------
+                 `ooo/                   OS: Arch Linux ARM aarch64
+                `+oooo:                  Host: Orange Pi 5 Plus
+               `+oooooo:                 Kernel: 5.10.160-rk35xx
+               -+oooooo+:                Uptime: 1 hour, 57 mins
+             `/:-:++oooo+:               Packages: 175 (pacman)
+            `/++++/+++++++:              Shell: zsh 5.9
+           `/++++++++++++++:             Terminal: /dev/pts/1
+          `/+++ooooooooooooo/`           CPU: (8) @ 1.800GHz
+         ./ooosssso++osssssso+`          Memory: 159MiB / 7688MiB
+        .oossssso-````/ossssss+`
+       -osssssso.      :ssssssso.
+      :osssssss/        osssso+++.
+     /ossssssss/        +ssssooo/-
+   `/ossssso+/:-        -:/+osssso+-
+  `+sso+:-`                 `.-/+oso:
+ `++:.                           `-/+/
+ .`                                 `/
+</code></pre><h2 id="写在最后">写在最后<a hidden class="anchor" aria-hidden="true" href="#写在最后">#</a></h2>
+<h3 id="关于内核">关于内核<a hidden class="anchor" aria-hidden="true" href="#关于内核">#</a></h3>
+<p>Armbian维护了一个Rk3588的内核，并被人制作到了Aur中<a href="https://aur.archlinux.org/packages/linux-rockchip-rk3588-bin">Aur package linux-rockchip-rk3588-bin</a>。但这个内核似乎并不支持Orangepi 5 plus，所以Armbian开发者在Orangepi 5 plus的Release版本中使用的是他们自己编译的一个<code>5.10.160-rk35xx</code>内核。这个内核并没有被Armbian打包成deb发布，所以目前来看并不值得使用第二种方法。也许等之后Orangepi 5 plus的内核支持更好之后再折腾，目前而言第三种还是最为方便的。</p>
+<h3 id="关于bootfs">关于bootfs<a hidden class="anchor" aria-hidden="true" href="#关于bootfs">#</a></h3>
+<p>Armbian的bootfs和Alarm的bootfs是不同的。Alarm的boot方式是基于mkinitcpio，内核文件不直接安装在<code>/boot</code>目录下。而Armbian的boot方式是直接安装在<code>/boot</code>目录下。所以如果想要完美移植内核的话，还需要研究mkinitcpio的工作原理。这个就以后再折腾吧。</p>
+
+
+  </div>
+
+  <footer class="post-footer">
+    <ul class="post-tags">
+    </ul>
+  </footer><script src="https://giscus.app/client.js"
+        data-repo="Licheam/Licheam.github.io"
+        data-repo-id="R_kgDOKHAvXw"
+        data-category="Announcements"
+        data-category-id="DIC_kwDOKHAvX84CYmYV"
+        data-mapping="title"
+        data-strict="1"
+        data-reactions-enabled="1"
+        data-emit-metadata="1"
+        data-input-position="top"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
+</article>
+    </main>
+    
+<footer class="footer">
+    <span>&copy; 2023 <a href="https://leachim.wang">Leachim&#39;s Blog</a></span>
+    <span>
+        Powered by
+        <a href="https://gohugo.io/" rel="noopener noreferrer" target="_blank">Hugo</a> &
+        <a href="https://github.com/adityatelange/hugo-PaperMod/" rel="noopener" target="_blank">PaperMod</a>
+    </span>
+</footer>
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z" />
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerHTML = 'copy';
+
+        function copyingDone() {
+            copybutton.innerHTML = 'copied!';
+            setTimeout(() => {
+                copybutton.innerHTML = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) { };
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+            
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+            
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+            
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+</body>
+
+</html>

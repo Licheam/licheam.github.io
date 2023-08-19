@@ -6,7 +6,16 @@
     <description>Recent content in Posts on Leachim&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 14 Aug 2023 21:00:52 +0800</lastBuildDate><atom:link href="https://leachim.wang/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 19 Aug 2023 18:52:46 +0800</lastBuildDate><atom:link href="https://leachim.wang/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Arch Linux on Orangepi 5 Plus</title>
+      <link>https://leachim.wang/posts/alarm-on-orangepi-5-plus/</link>
+      <pubDate>Sat, 19 Aug 2023 18:52:46 +0800</pubDate>
+      
+      <guid>https://leachim.wang/posts/alarm-on-orangepi-5-plus/</guid>
+      <description>前情提要 最近剁手了一个Rockchip 3588的开发板Orangepi 5 plus（后称Opi5+），主要是有点馋Rk3588的性能。谁能拒绝</description>
+    </item>
+    
     <item>
       <title>Arch Linux on Orangepi R1 Plus LTS</title>
       <link>https://leachim.wang/posts/alarm-on-orangepi-r1-plus-lts/</link>
