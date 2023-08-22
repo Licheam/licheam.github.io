@@ -25,14 +25,5 @@
       <description>这篇博客讲述了作者在Orangepi R1 Plus LTS上安装Arch Linux的过程。尽管该板卡原本计划用于软路由，但由于缺少Wi-Fi蓝牙模块，作者放弃了软路由方案，转而尝试安装Arch Linux。作者详细描述了U-Boot配置、ARM Trusted Firmware编译以及U-Boot和设备树的编译和安装过程。最终，作者成功在Orangepi R1 Plus LTS上安装并启动了Arch Linux系统。作者还提到了官方推荐的Debian脚本编译U-Boot的方法，但由于使用Arch Linux，未进一步测试。</description>
     </item>
     
-    <item>
-      <title></title>
-      <link>https://leachim.wang/about/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://leachim.wang/about/</guid>
-      <description>最近把博客重新用Hugo搭建了一下，暂时不迁移以前的博客文章了。临时将以前的博客强行部署了一下，暂时放置在这里。迁移的事情以后再慢慢考虑吧。</description>
-    </item>
-    
   </channel>
 </rss>
