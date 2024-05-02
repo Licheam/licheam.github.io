@@ -6,7 +6,16 @@
     <description>Recent content on Leachim&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Sat, 19 Aug 2023 18:52:46 +0800</lastBuildDate><atom:link href="https://leachim.wang/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 02 May 2024 16:10:59 +0800</lastBuildDate><atom:link href="https://leachim.wang/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>沃雷顿追风200改装记录</title>
+      <link>https://leachim.wang/posts/zf200/</link>
+      <pubDate>Thu, 02 May 2024 16:10:59 +0800</pubDate>
+      
+      <guid>https://leachim.wang/posts/zf200/</guid>
+      <description>前言 前段时间打算入坑公路车，然后研究了一下公路车市场。其实从需求层面讲并不是特别必要，当时if anything最多也是把每天10min通勤变</description>
+    </item>
+    
     <item>
       <title>Arch Linux on Orangepi 5 Plus</title>
       <link>https://leachim.wang/posts/alarm-on-orangepi-5-plus/</link>
